@@ -1,0 +1,105 @@
+{
+  "delai_heures": 24,
+  "sources": [
+    {
+      "dossier": "~/Downloads"
+    }
+  ],
+  "journal": "~/Downloads/_OÙ SONT MES FICHIERS.md",
+  "ambigus": "~/Documents/À trier",
+  "quarantaine": "~/Documents/Quarantaine/{annee}-{mois}",
+  "calibre": {
+    "calibredb": "/Applications/calibre.app/Contents/MacOS/calibredb",
+    "bibliotheque": "~/Calibre Library"
+  },
+  "destinations": {
+    "installeur": "QUARANTAINE",
+    "ebook": "CALIBRE",
+    "livres": "~/Documents/Livres",
+    "paie": "~/Documents/Administratif/Paie",
+    "impots": "~/Documents/Administratif/Impôts",
+    "banque": "~/Documents/Administratif/Banque",
+    "factures": "~/Documents/Administratif/Factures",
+    "sante": "~/Documents/Administratif/Santé",
+    "logement": "~/Documents/Administratif/Logement",
+    "vehicule": "~/Documents/Administratif/Véhicule",
+    "identite": "~/Documents/Administratif/Identité",
+    "attestation": "~/Documents/Administratif/Attestations",
+    "etudes": "~/Documents/Études",
+    "travail": "~/Documents/Travail",
+    "electronique": "~/Documents/Datasheets",
+    "cao3d": "~/Documents/Modèles 3D",
+    "capture": "~/Pictures/Captures/{annee}-{mois}",
+    "media": "~/Pictures/À importer"
+  },
+  "regles": [
+    [
+      "installeur",
+      "\\.(dmg|pkg|ipa|msi|exe|apk)$|installer"
+    ],
+    [
+      "ebook",
+      "\\.(epub|azw3|mobi)$"
+    ],
+    [
+      "paie",
+      "bulletin.{0,4}de.{0,3}(paie|salaire)|fiche de paie|payslip"
+    ],
+    [
+      "impots",
+      "impot|avis d.imposition|dgfip|taxe fonciere|taxe d.habitation"
+    ],
+    [
+      "sante",
+      "assurance.?maladie|ameli|cpam|ordonnance|mutuelle|radio|analyses? (de )?sang|compte.rendu medical"
+    ],
+    [
+      "logement",
+      "quittance|loyer|\\bbail\\b|echeance|assurance habitation|etat des lieux"
+    ],
+    [
+      "vehicule",
+      "carte grise|certificat d.immatriculation|pneu|controle technique|assurance auto"
+    ],
+    [
+      "identite",
+      "passeport|carte.?d.?identit|\\bcni\\b|titre de sejour|permis de conduire"
+    ],
+    [
+      "etudes",
+      "certificat.de.scolarit|releve.{0,3}de.notes|diplome|bulletin scolaire"
+    ],
+    [
+      "attestation",
+      "attestation|responsabilite civile|cvec"
+    ],
+    [
+      "banque",
+      "\\brib\\b|\\biban\\b|releve de compte|mandat.?sepa"
+    ],
+    [
+      "travail",
+      "^cv\\b|^cv[ _-]|lettre de motivation|contrat de travail|convention de stage|candidature"
+    ],
+    [
+      "electronique",
+      "datasheet|schematic|\\bbom\\b"
+    ],
+    [
+      "cao3d",
+      "\\.(step|stp|stl|igs|iges|sldprt|sldasm|f3d|3mf)$"
+    ],
+    [
+      "factures",
+      "factur|invoice|receipt|\\brecu\\b|\\border\\b|commande|devis"
+    ],
+    [
+      "capture",
+      "capture d.?ecran|screenshot"
+    ],
+    [
+      "media",
+      "^(img_|dji_|pxl_|dsc|mvimg|\\d{8}_\\d{6}).*\\.(heic|jpe?g|png|gif|webp|dng|mov|mp4|m4v|mpg|avi)$|\\.(heic|mov|mp4|m4v|mpg|avi)$"
+    ]
+  ]
+}
