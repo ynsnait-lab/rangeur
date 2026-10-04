@@ -96,6 +96,23 @@ class TestRangeur(unittest.TestCase):
         cfg = R.charger_config(cfg_json)
         self.assertEqual(R.classer("facture projet-x.pdf", R.compiler(cfg["regles"])), "perso")
 
+    def test_commande_externe(self):
+        script = os.path.join(self.tmp, "ranger-capture.sh")
+        cible = os.path.join(self.tmp, "captures-renommees")
+        with open(script, "w") as f:
+            f.write('#!/bin/sh\nmkdir -p "%s"\nmv "$1" "%s/renommee.png" && echo "%s/renommee.png"\n' % (cible, cible, cible))
+        os.chmod(script, 0o755)
+        self.cfg["commandes"] = {"capture": script}
+        self.ecrire("Capture d’écran 2026-10-05 à 10.00.00.png")
+        R.ranger(self.cfg, min_age=0)
+        self.assertTrue(os.path.exists(os.path.join(cible, "renommee.png")))
+        self.assertIn("captures-renommees", open(os.path.join(self.dl, "_journal.md"), encoding="utf-8").read())
+
+    def test_commande_en_echec_range_normalement(self):
+        self.cfg["commandes"] = {"capture": "/bin/false"}
+        self.ecrire("Capture d’écran 2026-10-05 à 11.00.00.png")
+        R.ranger(self.cfg, min_age=0)
+        self.assertTrue(os.path.exists(self.d("capture", "Capture d’écran 2026-10-05 à 11.00.00.png")))
 
 if __name__ == "__main__":
     unittest.main()

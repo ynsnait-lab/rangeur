@@ -18,11 +18,13 @@ Commandes
   rangeur --noter SRC DEST RAISON  ajoute une ligne au journal (pour d'autres scripts)
 
 Config : ~/.rangeur/config.json (ou variable RANGEUR_CONFIG, ou --config).
+« commandes » (optionnel) : {catégorie: script} — le fichier est confié à ce script au lieu d'être
+déplacé (le script reçoit le chemin, déplace le fichier et peut afficher sa destination sur la dernière ligne).
 Aucune dépendance : Python 3.9+ de macOS suffit.
 """
 import argparse, copy, datetime, errno, fcntl, hashlib, json, os, re, shutil, subprocess, sys, time, unicodedata, zipfile
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 HOME = os.path.expanduser("~")
 STATE = os.environ.get("RANGEUR_ETAT", os.path.join(HOME, ".rangeur"))
 JOURNAL_TSV = os.path.join(STATE, "journal.tsv")
@@ -75,7 +77,7 @@ CONFIG_INTEGREE = {
         ["electronique", r"datasheet|schematic|\bbom\b"],
         ["cao3d", r"\.(step|stp|stl|igs|iges|sldprt|sldasm|f3d|3mf)$"],
         ["factures", r"factur|invoice|receipt|\brecu\b|\border\b|commande|devis"],
-        ["capture", r"capture d.?ecran|screenshot"],
+        ["capture", r"capture d.?ecran|screenshot|enregistrement de l.?ecran|screen recording"],
         ["media", r"^(img_|dji_|pxl_|dsc|mvimg|\d{8}_\d{6}).*\.(heic|jpe?g|png|gif|webp|dng|mov|mp4|m4v|mpg|avi)$|\.(heic|mov|mp4|m4v|mpg|avi)$"],
     ],
 }
@@ -301,6 +303,20 @@ def deplacer(src, dossier_dest, eviter_doublon=True):
     return "deplace", dst
 
 
+def confier(p, commande):
+    """Confie p à un script externe. Renvoie la destination (dernière ligne affichée) ou None si échec."""
+    env = dict(os.environ, RANGEUR_SOUS_COMMANDE="1")
+    try:
+        r = subprocess.run([os.path.expanduser(commande), p], capture_output=True, text=True, timeout=600, env=env)
+    except Exception as e:
+        print("! commande %s : %s" % (commande, e), file=sys.stderr)
+        return None
+    if r.returncode != 0 or os.path.lexists(p):
+        return None
+    lignes = [l for l in (r.stdout or "").splitlines() if l.strip()]
+    return lignes[-1].strip() if lignes else ""
+
+
 def calibre_ajouter(p, cfg):
     c = cfg.get("calibre") or {}
     exe, lib = c.get("calibredb"), chemin(c.get("bibliotheque", "")) if c.get("bibliotheque") else None
@@ -421,6 +437,16 @@ def executer(plan, cfg, quarantaine, reste, log_extra=None):
         if not os.path.lexists(p):
             continue
         try:
+            commande = (cfg.get("commandes") or {}).get(cle)
+            if commande and cible not in ("CALIBRE", quarantaine):
+                dst = confier(p, commande)
+                if dst is not None:
+                    dst = dst if dst and os.path.lexists(dst) else os.path.join(cible, nom)
+                    raison = raison or "via %s" % os.path.basename(commande)
+                    journaliser(p, dst, raison, log_extra)
+                    entrees.append((time.strftime("%H:%M"), nom, affiche(os.path.dirname(dst)), raison))
+                    continue
+                raison = "commande %s en échec, rangé normalement" % os.path.basename(commande)
             if cible == "CALIBRE":
                 ok, msg = calibre_ajouter(p, cfg)
                 if ok:

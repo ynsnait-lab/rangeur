@@ -76,6 +76,17 @@ Tout est dans `~/.rangeur/config.json`. Ce que tu n'y mets pas reprend la valeur
 - **`sources`** : les dossiers surveillés ; chacun peut avoir sa propre `quarantaine` et ses `ambigus`.
 - **`journal`** : chemin du journal lisible (`""` pour aucun).
 - **`calibre`** : chemins de `calibredb` et de ta bibliothèque, ou `null`.
+- **`commandes`** : `{catégorie: script}`. Pour cette catégorie, le fichier est confié au script au lieu
+  d'être déplacé : le script reçoit le chemin du fichier, le range comme il veut, et peut afficher la
+  destination sur sa dernière ligne (elle sera notée dans le journal). La variable `RANGEUR_SOUS_COMMANDE=1`
+  lui indique qu'il est appelé par le rangeur. Si le script échoue, le fichier est rangé normalement.
+
+  Exemple : laisser les captures d'écran 24 h dans Téléchargements, puis les confier à un script qui les
+  renomme et rend leur texte cherchable :
+
+  ```json
+  "commandes": {"capture": "~/bin/range-capture"}
+  ```
 
 ## Commandes
 
